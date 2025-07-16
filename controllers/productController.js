@@ -1,9 +1,3 @@
-/**
- * Product Controller
- * --------------------
- * Handles CRUD + Aggregation for Products.
- */
-
 const Product = require("../models/product");
 
 /**

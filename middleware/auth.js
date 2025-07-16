@@ -9,8 +9,7 @@
  * Example:
  *   token: secretToken123
  */
-
-require('dotenv').config();
+ 
 
 /**
  * Auth middleware:

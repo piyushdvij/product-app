@@ -1,9 +1,3 @@
-/**
- * Category Controller
- * ---------------------
- * Handles CRUD for Categories.
- */
-
 const Category = require('../models/category');
 
 /**

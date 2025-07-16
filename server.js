@@ -2,13 +2,11 @@
  * Main server entry point.
  * Loads env, connects DB, sets up middlewares & routes.
  */ 
-
+require('dotenv').config();
 const express = require('express');
 const morgan = require('morgan');
 const helmet = require('helmet');
-const cors = require('cors');
-
-require('dotenv').config();
+const cors = require('cors');  
 
 const connectDB = require('./config/db');
 
