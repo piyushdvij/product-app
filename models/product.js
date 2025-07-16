@@ -15,6 +15,7 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true, // name must be provided
       trim: true,     // removes leading/trailing spaces automatically
+     
     },
     price: {
       type: Number,

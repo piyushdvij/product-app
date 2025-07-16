@@ -27,6 +27,12 @@ exports.createProduct = async (req, res) => {
       return res.error("Product category is required.", 400);
     }
 
+    // ✅ Check if it already exists
+    const existingProduct = await Product.findOne({ name: name.trim() });
+    if (existingProduct) {
+      return res.error('Product name already exists.', 400);
+    }
+
     const product = new Product({
       name: name.trim(),
       price,
@@ -44,18 +50,50 @@ exports.createProduct = async (req, res) => {
 };
 
 /**
- * Get all Products
- * GET /api/products
+ * Get Products with optional name filter and pagination.
+ * GET /api/products?name=phone&page=1&limit=10
  */
+
 exports.getProducts = async (req, res) => {
   try {
-    const products = await Product.find().populate("category");
-    return res.success(products, "Products fetched successfully.");
+    // ✅ 1️⃣ Pagination
+    const page = parseInt(req.query.page) || 1; // Default to page 1
+    const limit = parseInt(req.query.limit) || 10; // Default to 10 items per page
+    const skip = (page - 1) * limit; // Calculate how many to skip
+
+    // ✅ 2️⃣ Simple name filter (optional)
+    const filter = {};
+    if (req.query.name) {
+      filter.name = { $regex: req.query.name, $options: 'i' }; // Case-insensitive search
+    }
+
+    // ✅ 3️⃣ Total count for pagination info
+    const totalItems = await Product.countDocuments(filter);
+
+    // ✅ 4️⃣ Find products with filter, pagination, and category populated
+    const products = await Product.find(filter)
+      .populate('category')
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 }); // Optional: newest first
+
+    // ✅ 5️⃣ Send response with metadata
+    return res.success(
+      {
+        page,
+        limit,
+        totalItems,
+        totalPages: Math.ceil(totalItems / limit),
+        items: products,
+      },
+      'Products fetched successfully.'
+    );
+
   } catch (err) {
     console.error(err);
-    return res.error("Internal server error.", 500);
+    return res.error('Internal server error.', 500);
   }
-};
+}; 
 
 /**
  * Get single Product by ID
