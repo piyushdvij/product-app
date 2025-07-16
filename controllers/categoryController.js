@@ -1,34 +1,51 @@
+/**
+ * Category Controller
+ * ---------------------
+ * Handles CRUD for Categories.
+ */
+
 const Category = require('../models/category');
 
-// Create new category
+/**
+ * Create a new Category
+ * POST /api/categories
+ */
 exports.createCategory = async (req, res) => {
   try {
+    const { name } = req.body;
 
-     const { name } = req.body;
-
-    // 👉 1️⃣ Check if a category with the same name already exists
-    const existingCategory = await Category.findOne({ name });
-
-    if (existingCategory) {
-      return res.status(400).json({
-        message: 'Category name already exists',
-      });
+    // ✅ Basic validation
+    if (!name || typeof name !== 'string' || name.trim().length === 0) {
+      return res.error('Category name is required and must be a non-empty string.', 400);
     }
 
-    const category = new Category({ name });
-    const saved = await category.save();
-    res.status(201).json(saved);
+    // ✅ Check if it already exists
+    const existingCategory = await Category.findOne({ name: name.trim() });
+    if (existingCategory) {
+      return res.error('Category name already exists.', 400);
+    }
+
+    const category = new Category({ name: name.trim() });
+    const savedCategory = await category.save();
+
+    return res.success(savedCategory, 'Category created successfully.', 201);
+
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    console.error(err);
+    return res.error('Internal server error.', 500);
   }
 };
 
-// Get all categories
+/**
+ * Get all Categories
+ * GET /api/categories
+ */
 exports.getCategories = async (req, res) => {
   try {
-    const categories = await Category.find();
-    res.json(categories);
+    const categories = await Category.find().sort({ createdAt: -1 });
+    return res.success(categories, 'Categories fetched successfully.');
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error(err);
+    return res.error('Internal server error.', 500);
   }
 };

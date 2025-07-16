@@ -7,13 +7,14 @@ const express = require('express');
 const morgan = require('morgan');
 const helmet = require('helmet');
 const cors = require('cors');
+
 require('dotenv').config();
 
 const connectDB = require('./config/db');
 
 const productRoutes = require('./routes/productRoutes');
-const categoryRoutes = require('./routes/categoryRoutes');
-
+const categoryRoutes = require('./routes/categoryRoutes'); 
+const responseFormat = require('./middleware/responseFormat');
 const app = express();
 
 // Connect to MongoDB
@@ -26,6 +27,14 @@ app.use(cors({
 }));
 app.use(morgan('dev')); // Log requests
 app.use(express.json()); // Parse JSON request bodies
+app.use(responseFormat);
+
+// ✅ Custom middleware: Logs method, URL, and time
+app.use((req, res, next) => {
+  console.log(`[CUSTOM LOGGER] ${req.method} ${req.url} at ${new Date().toISOString()}`);
+  next();
+});
+
 
 // Routes
 app.use('/api/products', productRoutes);
