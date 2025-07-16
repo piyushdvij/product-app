@@ -7,19 +7,19 @@ const router = express.Router();
 const productController = require('../controllers/productController');
  
 // Create a new product
-router.post('/', productController.createProduct);
+router.post('/create', productController.createProduct);
 
 // Get all products
-router.get('/', productController.getProducts);
+router.get('/fetch', productController.getProducts);
 
 // Get single product by ID
-router.get('/:id', productController.getProductById);
+router.get('/fetch/:id', productController.getProductById);
 
 // Update product by ID
-router.put('/:id', productController.updateProduct);
+router.put('/update/:id', productController.updateProduct);
 
 // Delete product by ID
-router.delete('/:id', productController.deleteProduct);
+router.delete('/delete/:id', productController.deleteProduct);
 
 // NEW: Aggregate products with category
 router.get('/aggregate/all', productController.getProductsWithCategory);
